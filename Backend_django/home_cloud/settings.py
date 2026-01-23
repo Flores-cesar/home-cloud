@@ -158,3 +158,39 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# --- PASO 1: LEER LAS CREDENCIALES ---
+# Si la variable no existe, os.getenv devuelve None.
+AZURE_STORAGE_ACCOUNT_NAME = os.getenv('AZURE_STORAGE_ACCOUNT_NAME')
+AZURE_STORAGE_ACCOUNT_KEY = os.getenv('AZURE_STORAGE_ACCOUNT_KEY')
+AZURE_STORAGE_CONNECTION_STRING = os.getenv('AZURE_STORAGE_CONNECTION_STRING')
+AZURE_STORAGE_CONTAINER_NAME = os.getenv('AZURE_STORAGE_CONTAINER_NAME', 'files') 
+AZURE_STORAGE_CUSTOM_DOMAIN = os.getenv('AZURE_STORAGE_CUSTOM_DOMAIN')
+
+# --- PASO 2: LA VÁLVULA DE SEGURIDAD (El IF) ---
+if AZURE_STORAGE_ACCOUNT_NAME and AZURE_STORAGE_ACCOUNT_KEY:
+    # --- PASO 3: CONFIGURACIÓN ACTIVA ---
+    # Construimos la URL pública donde se verán los archivos.
+    # f-string crea: "https://homecloud.blob.core.windows.net"
+    AZURE_STORAGE_ACCOUNT_URL = f"https://{AZURE_STORAGE_ACCOUNT_NAME}.blob.core.windows.net"
+
+    # ESTA ES LA LÍNEA CRÍTICA 1 (Media):
+    # Le dice a Django: "Cuando alguien suba una foto, NO la guardes en el disco."
+    # "Usa la clase AzureStorage de la librería que instalamos para enviarla a la nube".
+    DEFAULT_FILE_STORAGE = 'storages.backends.azure_storage.AzureStorage'
+
+    # Define en qué carpeta DENTRO del contenedor de Azure se guardarán las cosas.
+    AZURE_LOCATION = 'media'
+
+    # --- CONFIGURACIÓN DE ARCHIVOS ESTÁTICOS (CSS/JS) ---
+
+    # ESTA ES LA LÍNEA CRÍTICA 2 (Static):
+    # Le dice a Django: "Cuando hagas 'python manage.py collectstatic', no guardes en local."
+    # "Sube los CSS y JS a Azure también".,Llamara a este código de Azure para que se encargue.
+    STATICFILES_STORAGE = 'storages.backends.azure_storage.AzureStorage'
+
+    # Le dice a la librería azure: "Usa este contenedor específico para los estáticos".
+    AZURE_CONTAINER = AZURE_STORAGE_CONTAINER_NAME
+
+    # Fuerza a que la conexión sea segura (HTTPS).
+    AZURE_SSL = True
