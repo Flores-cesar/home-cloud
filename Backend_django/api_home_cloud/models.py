@@ -1,13 +1,23 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-# Familia (grupo familiar)
-class Familia(models.Model):
+# Grupo (familia, amigos, consorcio, equipo de trabajo, etc.)
+class Grupo(models.Model):
+    TIPOS_GRUPO = [
+        ('familia', 'Familia'),
+        ('amigos', 'Grupo de Amigos'),
+        ('consorcio', 'Consorcio'),
+        ('equipo', 'Equipo de Trabajo'),
+        ('otro', 'Otro'),
+    ]
+
     nombre = models.CharField(max_length=100)
+    tipo_grupo = models.CharField(max_length=20, choices=TIPOS_GRUPO, default='familia')
+    descripcion = models.TextField(blank=True, help_text="Descripción opcional del grupo")
     fecha_creacion = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.nombre
+        return f"{self.nombre} ({self.get_tipo_grupo_display()})"
 
 # PerfilUsuario (extiende el usuario de Django)
 class PerfilUsuario(models.Model):
@@ -17,7 +27,7 @@ class PerfilUsuario(models.Model):
     ]
 
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='perfil')
-    familia = models.ForeignKey(Familia, on_delete=models.CASCADE, related_name='miembros')
+    grupo = models.ForeignKey(Grupo, on_delete=models.CASCADE, related_name='miembros')
     rol = models.CharField(max_length=20, choices=ROLES, default='miembro')
 
     def __str__(self):
@@ -33,7 +43,7 @@ class Documento(models.Model):
         ('otro', 'Otro'),
     ]
 
-    familia = models.ForeignKey(Familia, on_delete=models.CASCADE, related_name='documentos')
+    grupo = models.ForeignKey(Grupo, on_delete=models.CASCADE, related_name='documentos')
     usuario = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='documentos')
     nombre_archivo = models.CharField(max_length=255)
     url_archivo = models.URLField(max_length=500)
@@ -53,7 +63,7 @@ class Tarea(models.Model):
         ('completada', 'Completada'),
     ]
 
-    familia = models.ForeignKey(Familia, on_delete=models.CASCADE, related_name='tareas')
+    grupo = models.ForeignKey(Grupo, on_delete=models.CASCADE, related_name='tareas')
     documento = models.ForeignKey(Documento, on_delete=models.SET_NULL, null=True, blank=True, related_name='tareas')
     titulo = models.CharField(max_length=255)
     descripcion = models.TextField(blank=True)

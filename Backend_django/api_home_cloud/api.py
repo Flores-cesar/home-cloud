@@ -1,9 +1,9 @@
 from rest_framework import viewsets, permissions
 from django.contrib.auth.models import User
-from .models import Familia, PerfilUsuario, Documento, Tarea, Notificacion
+from .models import Grupo, PerfilUsuario, Documento, Tarea, Notificacion
 from .serializers import (
     UsuarioSerializer,
-    FamiliaSerializer,
+    GrupoSerializer,
     PerfilUsuarioSerializer,
     DocumentoSerializer,
     TareaSerializer,
@@ -19,21 +19,21 @@ class UsuarioViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = UsuarioSerializer
     permission_classes = [permissions.AllowAny]
 
-# Familias
-class FamiliaViewSet(viewsets.ModelViewSet):
-    queryset = Familia.objects.all().order_by('-fecha_creacion')
-    serializer_class = FamiliaSerializer
+# Grupos
+class GrupoViewSet(viewsets.ModelViewSet):
+    queryset = Grupo.objects.all().order_by('-fecha_creacion')
+    serializer_class = GrupoSerializer
     permission_classes = [permissions.AllowAny]
 
 # Perfiles de usuario
 class PerfilUsuarioViewSet(viewsets.ModelViewSet):
-    queryset = PerfilUsuario.objects.select_related('user', 'familia').all()
+    queryset = PerfilUsuario.objects.select_related('user', 'grupo').all()
     serializer_class = PerfilUsuarioSerializer
     permission_classes = [permissions.AllowAny]
 
 # Documentos
 class DocumentoViewSet(viewsets.ModelViewSet):
-    queryset = Documento.objects.select_related('familia', 'usuario').all().order_by('-fecha_subida')
+    queryset = Documento.objects.select_related('grupo', 'usuario').all().order_by('-fecha_subida')
     serializer_class = DocumentoSerializer
     permission_classes = [permissions.AllowAny]
 
@@ -46,7 +46,7 @@ class DocumentoViewSet(viewsets.ModelViewSet):
 
 # Tareas
 class TareaViewSet(viewsets.ModelViewSet):
-    queryset = Tarea.objects.select_related('familia', 'documento', 'creado_por', 'asignado_a').all().order_by('-fecha_creacion')
+    queryset = Tarea.objects.select_related('grupo', 'documento', 'creado_por', 'asignado_a').all().order_by('-fecha_creacion')
     serializer_class = TareaSerializer
     permission_classes = [permissions.AllowAny]
 

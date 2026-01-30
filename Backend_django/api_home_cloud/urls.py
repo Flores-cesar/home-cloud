@@ -2,7 +2,7 @@ from django.urls import path
 from rest_framework import routers
 from .api import (
     UsuarioViewSet,
-    FamiliaViewSet,
+    GrupoViewSet,
     PerfilUsuarioViewSet,
     DocumentoViewSet,
     TareaViewSet,
@@ -23,7 +23,7 @@ router = routers.DefaultRouter()
 
 # Registramos todos los endpoints
 router.register('api/usuarios', UsuarioViewSet, basename='usuarios')
-router.register('api/familias', FamiliaViewSet, basename='familias')
+router.register('api/grupos', GrupoViewSet, basename='grupos')
 router.register('api/perfiles', PerfilUsuarioViewSet, basename='perfiles')
 router.register('api/documentos', DocumentoViewSet, basename='documentos')
 router.register('api/tareas', TareaViewSet, basename='tareas')
