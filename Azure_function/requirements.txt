@@ -1,5 +1,17 @@
-# Uncomment to enable Azure Monitor OpenTelemetry
-# Ref: aka.ms/functions-azure-monitor-python
-# azure-monitor-opentelemetry
-
+# Azure Functions core
 azure-functions
+
+# Environment variables and configuration
+python-dotenv
+
+# HTTP requests (useful for API calls)
+requests
+
+# Data processing (JSON, etc.)
+Pillow
+
+# Optional: Azure Storage (for blob storage)
+# azure-storage-blob
+
+# Optional: Azure Cognitive Services (for AI services)
+# azure-cognitiveservices-vision-computervision
